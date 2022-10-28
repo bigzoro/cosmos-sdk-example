@@ -1,0 +1,14 @@
+syntax = "proto3";
+package bigzoro.cosmossdkexample.cosmossdkexample;
+
+import "gogoproto/gogo.proto";
+import "cosmossdkexample/cosmossdkexample/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/bigzoro/cosmos-sdk-example/x/cosmossdkexample/types";
+
+// GenesisState defines the cosmossdkexample module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

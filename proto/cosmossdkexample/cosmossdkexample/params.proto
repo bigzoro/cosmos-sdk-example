@@ -1,0 +1,12 @@
+syntax = "proto3";
+package bigzoro.cosmossdkexample.cosmossdkexample;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/bigzoro/cosmos-sdk-example/x/cosmossdkexample/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
