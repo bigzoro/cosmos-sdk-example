@@ -263,6 +263,8 @@ func New(
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	// Instantiate a new codec and initialize the codec of each of the application's modules using the basic manager.
+	// 使用基本管理器实例化一个新的编解码器并初始化每个应用程序模块的编解码器。
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -290,6 +292,8 @@ func New(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
+	// Instantiate a new application with a reference to a baseapp instance, a codec, and all the appropriate store keys.
+	// 使用对baseapp实例的引用、编解码器和所有适当的存储键实例化一个新应用程序。
 	app := &App{
 		BaseApp:           bApp,
 		cdc:               cdc,
@@ -312,6 +316,10 @@ func New(
 	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable()))
 
 	// add capability keeper and ScopeToModule for ibc module
+
+	// Instantiate all the keeper objects defined in the application's type using the NewKeeper
+	// function of each of the application's modules. Note that keepers must be instantiated in the
+	// correct order, as the NewKeeper of one module might require a reference to another module's keeper.
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
 		appCodec,
 		keys[capabilitytypes.StoreKey],
@@ -729,6 +737,15 @@ func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Respo
 }
 
 // InitChainer application update at chain initialization
+
+// The InitChainer is a function that initializes the state of the application from a genesis file (i.e. token balances of genesis accounts).
+// InitChainer是一个函数，它从一个生成文件(即生成账户的token余额)初始化应用程序的状态。
+
+// It is called when the application receives the InitChain message from the Tendermint engine, which happens when the node is started at appBlockHeight == 0 (i.e. on genesis).
+// 当应用程序从Tendermint引擎接收到InitChain消息时调用它，这发生在节点在appBlockHeight == 0(即在genesis上)启动时。
+
+// The application must set the InitChainer in its constructor via the SetInitChainer method.
+// 应用程序必须通过SetInitChainer方法在其构造函数中设置InitChainer。
 func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
